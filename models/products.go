@@ -1,6 +1,8 @@
 package models
 
-type Product struct {
+import "gorm.io/gorm"
+
+type Products struct {
 	ID          int8    `gorm:"primary key;autoIncrement" json:"id"`
 	Name        *string `json:"name"`
 	Description *string `json:description`
@@ -8,6 +10,6 @@ type Product struct {
 }
 
 func MigrateProduct(db *gorm.DB) error {
-	err := db.AutoMigrate{&Product{}}
+	err := db.AutoMigrate(&Products{})
 	return err
 }

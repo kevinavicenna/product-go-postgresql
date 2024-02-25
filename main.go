@@ -6,7 +6,6 @@ import (
 	"github.com/kevinavicenna/product-go-postgresql/models"
 	"github.com/kevinavicenna/product-go-postgresql/storage"
 	"gorm.io/gorm"
-
 	"log"
 	"net/http"
 	"os"
@@ -55,26 +54,61 @@ func (r *Repository) GetAllProduct(context *fiber.Ctx) error {
 	err := r.DB.Find(ProductModels).Error
 	if err != nil {
 		context.Status(http.StatusBadRequest).JSON(
-			&fiber.MAP{"message": "invd"})
+			&fiber.Map{"message": "could not get any product"})
 		return err
 	}
 	context.Status(http.StatusOK).JSON(
-		&fiber.Map{"message": "get all product",
-			"data": ProductModels})
+		&fiber.Map{
+			"message": "book fetch",
+			"data":    ProductModels,
+		})
 	return nil
 }
 
-func (r *Repository) DeleteProduct(context *fiber.Ctx) {
+func (r *Repository) DeleteProduct(context *fiber.Ctx) error {
 	ProductModels := &[]models.Products{}
+	id := context.Params("id")
+	if id == "" {
+		context.Status(http.StatusInternalServerError).JSON(&fiber.Map{
+			"message": "id cant empty",
+		})
+	}
 
+	err := r.DB.Delete(ProductModels, id).Error
+	if err.Error != nil {
+		context.Status(http.StatusBadRequest).JSON(
+			&fiber.Map{"message": "could not delete product"})
+		return err
+	}
+	context.Status(http.StatusOK).JSON(&fiber.Map{
+		"message": "delete book successfully",
+	})
+	return nil
 }
 
-func (r *Repository) GetProductID() {
+func (r *Repository) GetProductID(context *fiber.Ctx) error {
+	id := context.Params("id")
+	ProductModels := &models.Products{}
+	if id == "" {
+		context.Status(http.StatusInternalServerError).JSON(
+			&fiber.Map{"message": "could not get product by id"})
+	}
+	err := r.DB.Where("id = ?", id).First(ProductModels).Error
+	if err != nil {
+		context.Status(http.StatusBadRequest).JSON(
+			&fiber.Map{"message": "could nnot get product by id"})
+		return err
+	}
+	context.Status(http.StatusOK).JSON(
+		&fiber.Map{
+			"message": "get id",
+			"data":    ProductModels,
+		})
+	return nil
 }
 
 func main() {
 	err := godotenv.Load(".env")
-
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -84,16 +118,19 @@ func main() {
 		Port:     os.Getenv("DB_PORT"),
 		Password: os.Getenv("DB_PASSWORD"),
 		User:     os.Getenv("DB_USER"),
-		db:       os.Getenv("DB_NAME"),
+		DB:       os.Getenv("DB_NAME"),
 		SSLMode:  os.Getenv("DB_SSL"),
 	}
 
 	db, err := storage.NewConnection(config)
-
 	if err != nil {
 		log.Fatal("Cant load database")
 	}
 
+	err = models.MigrateProduct(db)
+	if err != nil {
+		log.Fatal("cant migrate db")
+	}
 	r := Repository{
 		DB: db,
 	}
