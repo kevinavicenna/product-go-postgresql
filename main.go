@@ -3,9 +3,13 @@ package main
 import (
 	"github.com/gofiber/fiber"
 	"github.com/joho/godotenv"
+	"github.com/kevinavicenna/product-go-postgresql/models"
+	"github.com/kevinavicenna/product-go-postgresql/storage"
 	"gorm.io/gorm"
+
 	"log"
 	"net/http"
+	"os"
 )
 
 type Product struct {
@@ -25,6 +29,7 @@ func (r *Repository) SetupRoutes(app *fiber.App) {
 	api.Get("/get_product/:id", r.GetProductID)
 	api.Get("/product", r.GetAllProduct)
 }
+
 func (r *Repository) CreateProduct(context *fiber.Ctx) error {
 	product := Product{}
 	err := context.BodyParser(&product)
@@ -43,13 +48,6 @@ func (r *Repository) CreateProduct(context *fiber.Ctx) error {
 		&fiber.Map{"message": "well done you create product:v"})
 	return nil
 }
-func (r *Repository) DeleteProduct() {
-
-}
-
-func (r *Repository) GetProductID() {
-
-}
 
 func (r *Repository) GetAllProduct(context *fiber.Ctx) error {
 	ProductModels := &[]models.Products{}
@@ -66,10 +64,28 @@ func (r *Repository) GetAllProduct(context *fiber.Ctx) error {
 	return nil
 }
 
+func (r *Repository) DeleteProduct(context *fiber.Ctx) {
+	ProductModels := &[]models.Products{}
+
+}
+
+func (r *Repository) GetProductID() {
+}
+
 func main() {
 	err := godotenv.Load(".env")
+
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	config := &storage.Config{
+		Host:     os.Getenv("DB_HOST"),
+		Port:     os.Getenv("DB_PORT"),
+		Password: os.Getenv("DB_PASSWORD"),
+		User:     os.Getenv("DB_USER"),
+		db:       os.Getenv("DB_NAME"),
+		SSLMode:  os.Getenv("DB_SSL"),
 	}
 
 	db, err := storage.NewConnection(config)
