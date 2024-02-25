@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gofiber/fiber"
 	"github.com/joho/godotenv"
 	"github.com/kevinavicenna/product-go-postgresql/models"
@@ -19,14 +20,6 @@ type Product struct {
 
 type Repository struct {
 	DB *gorm.DB
-}
-
-func (r *Repository) SetupRoutes(app *fiber.App) {
-	api := app.Group("/api")
-	api.Post("/create_product", r.CreateProduct)
-	api.Delete("delete_product/:id", r.DeleteProduct)
-	api.Get("/get_product/:id", r.GetProductID)
-	api.Get("/product", r.GetAllProduct)
 }
 
 func (r *Repository) CreateProduct(context *fiber.Ctx) error {
@@ -93,6 +86,9 @@ func (r *Repository) GetProductID(context *fiber.Ctx) error {
 		context.Status(http.StatusInternalServerError).JSON(
 			&fiber.Map{"message": "could not get product by id"})
 	}
+
+	fmt.Println("this id :", id)
+
 	err := r.DB.Where("id = ?", id).First(ProductModels).Error
 	if err != nil {
 		context.Status(http.StatusBadRequest).JSON(
@@ -107,6 +103,14 @@ func (r *Repository) GetProductID(context *fiber.Ctx) error {
 	return nil
 }
 
+func (r *Repository) SetupRoutes(app *fiber.App) {
+	api := app.Group("/api")
+	api.Post("/create_product", r.CreateProduct)
+	api.Delete("delete_product/:id", r.DeleteProduct)
+	api.Get("/get_product/:id", r.GetProductID)
+	api.Get("/product", r.GetAllProduct)
+}
+
 func main() {
 	err := godotenv.Load(".env")
 	if err != nil {
@@ -118,8 +122,8 @@ func main() {
 		Port:     os.Getenv("DB_PORT"),
 		Password: os.Getenv("DB_PASSWORD"),
 		User:     os.Getenv("DB_USER"),
-		DB:       os.Getenv("DB_NAME"),
 		SSLMode:  os.Getenv("DB_SSL"),
+		DB:       os.Getenv("DB_NAME"),
 	}
 
 	db, err := storage.NewConnection(config)
