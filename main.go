@@ -13,7 +13,7 @@ import (
 )
 
 type Product struct {
-	Name        string `json:"author"`
+	Name        string `json:"name"`
 	Category    string `json:"category"`
 	Description string `json:"description"`
 }
@@ -31,7 +31,7 @@ func (r *Repository) CreateProduct(context *fiber.Ctx) error {
 			&fiber.Map{"message": "request failed"})
 		return err
 	}
-	err = r.DB.Create(&book).Error
+	err = r.DB.Create(&product).Error
 	if err != nil {
 		context.Status(http.StatusBadRequest).JSON(
 			&fiber.Map{"message": "could not create product"})
@@ -53,7 +53,7 @@ func (r *Repository) GetAllProduct(context *fiber.Ctx) error {
 	}
 	context.Status(http.StatusOK).JSON(
 		&fiber.Map{
-			"message": "book fetch",
+			"message": "product fetch",
 			"data":    ProductModels,
 		})
 	return nil
@@ -66,16 +66,17 @@ func (r *Repository) DeleteProduct(context *fiber.Ctx) error {
 		context.Status(http.StatusInternalServerError).JSON(&fiber.Map{
 			"message": "id cant empty",
 		})
+		return nil
 	}
 
 	err := r.DB.Delete(ProductModels, id)
 	if err.Error != nil {
 		context.Status(http.StatusBadRequest).JSON(
 			&fiber.Map{"message": "could not delete product"})
-		return err
+		return err.Error
 	}
 	context.Status(http.StatusOK).JSON(&fiber.Map{
-		"message": "delete book successfully",
+		"message": "delete product successfully",
 	})
 	return nil
 }
@@ -104,12 +105,21 @@ func (r *Repository) GetProductID(context *fiber.Ctx) error {
 	return nil
 }
 
+// sepertinya ini versi khusus fiber versi baru
+//func (r *Repository) SetupRoutes(app *fiber.App) {
+//	api := app.Group("/api")
+//	api.Post("/create_product", r.CreateProduct)
+//	api.Delete("delete_product/:id", r.DeleteProduct)
+//	api.Get("/get_product/:id", r.GetProductID)
+//	api.Get("/product", r.GetAllProduct)
+//}
+
 func (r *Repository) SetupRoutes(app *fiber.App) {
 	api := app.Group("/api")
-	api.Post("/create_product", r.CreateProduct)
-	api.Delete("delete_product/:id", r.DeleteProduct)
-	api.Get("/get_product/:id", r.GetProductID)
-	api.Get("/product", r.GetAllProduct)
+	api.Post("/create_product", func(c *fiber.Ctx) { r.CreateProduct(c) })
+	api.Delete("/delete_product/:id", func(c *fiber.Ctx) { r.DeleteProduct(c) })
+	api.Get("/get_product/:id", func(c *fiber.Ctx) { r.GetProductID(c) })
+	api.Get("/products", func(c *fiber.Ctx) { r.GetAllProduct(c) })
 }
 
 func main() {
