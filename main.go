@@ -31,6 +31,7 @@ func (r *Repository) CreateProduct(context *fiber.Ctx) error {
 			&fiber.Map{"message": "request failed"})
 		return err
 	}
+	err = r.DB.Create(&book).Error
 	if err != nil {
 		context.Status(http.StatusBadRequest).JSON(
 			&fiber.Map{"message": "could not create product"})
@@ -67,7 +68,7 @@ func (r *Repository) DeleteProduct(context *fiber.Ctx) error {
 		})
 	}
 
-	err := r.DB.Delete(ProductModels, id).Error
+	err := r.DB.Delete(ProductModels, id)
 	if err.Error != nil {
 		context.Status(http.StatusBadRequest).JSON(
 			&fiber.Map{"message": "could not delete product"})
@@ -135,6 +136,7 @@ func main() {
 	if err != nil {
 		log.Fatal("cant migrate db")
 	}
+
 	r := Repository{
 		DB: db,
 	}
