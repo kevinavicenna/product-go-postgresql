@@ -1,6 +1,6 @@
 module github.com/kevinavicenna/product-go-postgresql
 
-go 1.23
+go 1.20
 
 require (
 	github.com/gofiber/fiber v1.14.6
