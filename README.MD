@@ -12,4 +12,7 @@
 Result Project  
 ![alt text](img/img.png)
 
+- Why i also include the .env?
+this only dummy for learning purpose , but in production make sure do not include .env for security purpose
+
 BY : KEVIN AVICENNA WIDIARTO

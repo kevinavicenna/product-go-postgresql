@@ -1,0 +1,54 @@
+services:
+  web:
+    container_name: product-app
+    build: .
+    ports: ["8080:8080"]
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+    networks:
+      - go-blog-network
+  
+  caddy:
+    image: caddy
+    container_name: caddy
+    depends_on:
+      - web
+    ports:
+      - 80:80
+    volumes:
+      - caddy-config:/config
+      - caddy-data:/data
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+    networks:
+      - go-blog-network
+        
+
+  db:
+    container_name: product-db
+    image: postgres:16.3
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    env_file:
+      - ./.env
+    volumes:
+      - dummy-data:/var/lib/postgresql/data
+    networks:
+      - go-blog-network
+  
+    
+volumes:
+  dummy-data:
+  caddy-config:
+  caddy-data:
+
+networks:
+  go-blog-network:
