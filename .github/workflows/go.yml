@@ -50,7 +50,7 @@ jobs:
     
     - name: Docker Push 
       run: |
-        docker push product_go_postgresql:latest
+        docker image push product_go_postgresql:latest
 
 
 
