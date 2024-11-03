@@ -36,7 +36,9 @@ jobs:
     
     - name: Docker Build
       run: docker build -t $GITHUB_SHA .
-
+    
+    - name: Trivy Scan
+      run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image $GITHUB_SHA
   deploy:
     name: Deploy to VM
     runs-on: ubuntu-latest
