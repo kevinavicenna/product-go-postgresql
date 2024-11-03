@@ -37,7 +37,7 @@ jobs:
     - name: Docker Build
       run: |
         docker build -t product_go_postgresql:${{ github.sha }} .
-        docker tag product_go_postgresql:${{ github.sha }} product_go_postgresql:latest
+        docker tag product_go_postgresql:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/product_go_postgresql:latest
     
     - name: Trivy Scan
       run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image product_go_postgresql:latest
@@ -50,7 +50,7 @@ jobs:
     
     - name: Docker Push 
       run: |
-        docker image push product_go_postgresql:latest
+        docker image push ${{ secrets.DOCKER_USERNAME }}/product_go_postgresql:latest
 
 
 
