@@ -27,12 +27,13 @@ jobs:
       run: |
         echo "Building the Go application..."
         go build -o testing main.go
-        
-    # - name: Run tests
-    #   run: |
-    #     echo "Running tests..."
-    #     go test -v ./...
-        
+    
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
   deploy:
     name: Deploy to VM
     runs-on: ubuntu-latest
@@ -43,7 +44,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Set up Go
-      uses: actions/setup-go@v3
+      uses: actions/setup-go@v4
       with:
         go-version: '1.20'
         
@@ -56,7 +57,7 @@ jobs:
     # - name: Set up SSH
     #   uses: webfactory/ssh-agent@v1
     #   with:
-    #     ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+    #     ssh-private-key: #${{ #secrets.SSH_PRIVATE_KEY }}#
     
     - name: executing remote ssh commands using password
       uses: appleboy/ssh-action@v1.0.3
