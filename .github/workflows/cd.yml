@@ -22,7 +22,8 @@ jobs:
         run: |
             git clone https://github.com/kevinavicenna/product-go-postgresql.git || (cd product-go-postgresql && git pull)
             cd product-go-postgresql
-    
+            ls
+            
       - name: Run docker-compose
         uses: hoverkraft-tech/compose-action@v2.0.1
         with:
