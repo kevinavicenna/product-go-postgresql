@@ -14,10 +14,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+    #   - name: ssh to server
+    #     uses: webfactory/ssh-agent@v0.9.0
+    #     with: |
+    #         ssh-private-key: ${{ secret.SSH_PRIVATE_KEY}}
+      - name: Clone Repo 
+        run: |
+            git clone https://github.com/kevinavicenna/product-go-postgresql.git || (cd product-go-postgresql && git pull)
+            cd product-go-postgresql
+    
       - name: Run docker-compose
         uses: hoverkraft-tech/compose-action@v2.0.1
         with:
-          compose-file: "./docker-compose.yml"
+          compose-file: "./product-go-postgresql/docker-compose.yml"
 
     #   - name: Docker Push
     #     run: |
@@ -29,35 +38,3 @@ jobs:
     #   - name: Run container
     #     run: |
     #         docker run -p 8080 ${{ secrets.DOCKER_USERNAME }}/product-go-postgresql:latest
-      
-#   steps:
-#   - name: Checkout code
-#     uses: actions/checkout@v3
-#   - name: Set up Go
-#     uses: actions/setup-go@v4
-#     with:
-#       go-version: '1.20'
-
-#   - name: Install dependencies
-#     run: go mod download
-
-#   - name: Build application
-#     run: go build -o testing ./main.go
-#   # - name: Set up SSH
-#   #   uses: webfactory/ssh-agent@v1
-#   #   with:
-#   #     ssh-private-key: #${{ #secrets.SSH_PRIVATE_KEY }}#
-
-#   - name: executing remote ssh commands using password
-#     uses: appleboy/ssh-action@v1.0.3
-#     with:
-#       host: ${{ secrets.HOST }}
-#       username: ${{ secrets.USERNAME }}
-#       key: ${{ secrets.SSH_PRIVATE_KEY }}
-#       script: |
-#         sudo systemctl stop myapp || true
-#         mkdir -p ~/testing
-#         rm -rf ~/testing/*
-#         scp -r testing ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:~/testing/
-#         cd ~/testing
-#         sudo systemctl start testing
