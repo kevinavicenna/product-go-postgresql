@@ -26,7 +26,7 @@ jobs:
       - name: Run docker-compose
         uses: hoverkraft-tech/compose-action@v2.0.1
         with:
-          compose-file: "./product-go-postgresql/docker-compose.yml"
+          compose-file: "./docker-compose.yml"
 
     #   - name: Docker Push
     #     run: |
