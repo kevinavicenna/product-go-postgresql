@@ -1,0 +1,62 @@
+name: Go CD Pipeline
+
+on:
+  workflow_run:
+    workflows: ["CI Pipeline"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - run: echo "🖥️ Test self hosted runner on my machine"
+    #   - name: Docker Push
+    #     run: |
+    #         docker pull ${{ secrets.DOCKER_USERNAME }}/product-go-postgresql:latest
+    #   - name: delete old container
+    #     run: | 
+    #         docker stop product-go-postgresql:latest || true
+    #         docker rm product-go-postgresql:latest || true
+    #   - name: Run container
+    #     run: |
+    #         docker run -p 8080 ${{ secrets.DOCKER_USERNAME }}/product-go-postgresql:latest
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Run docker-compose
+        uses: hoverkraft-tech/compose-action@v2.0.1
+        with:
+          compose-file: "./docker-compose.yml"
+      
+#   steps:
+#   - name: Checkout code
+#     uses: actions/checkout@v3
+#   - name: Set up Go
+#     uses: actions/setup-go@v4
+#     with:
+#       go-version: '1.20'
+
+#   - name: Install dependencies
+#     run: go mod download
+
+#   - name: Build application
+#     run: go build -o testing ./main.go
+#   # - name: Set up SSH
+#   #   uses: webfactory/ssh-agent@v1
+#   #   with:
+#   #     ssh-private-key: #${{ #secrets.SSH_PRIVATE_KEY }}#
+
+#   - name: executing remote ssh commands using password
+#     uses: appleboy/ssh-action@v1.0.3
+#     with:
+#       host: ${{ secrets.HOST }}
+#       username: ${{ secrets.USERNAME }}
+#       key: ${{ secrets.SSH_PRIVATE_KEY }}
+#       script: |
+#         sudo systemctl stop myapp || true
+#         mkdir -p ~/testing
+#         rm -rf ~/testing/*
+#         scp -r testing ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:~/testing/
+#         cd ~/testing
+#         sudo systemctl start testing
