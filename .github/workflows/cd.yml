@@ -31,6 +31,7 @@ jobs:
 
       - name: Build and Start Docker Compose
         run: |
+          ls
           docker compose down || true
           docker compose up -d
       - name: Verify Deployment
