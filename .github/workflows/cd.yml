@@ -24,10 +24,18 @@ jobs:
             cd product-go-postgresql
             ls
 
-      - name: Run docker-compose
+      - name:  Test Run docker-compose
         uses: hoverkraft-tech/compose-action@v2.0.1
         with:
           compose-file: "./Docker-compose.yaml"
+
+      - name: Build and Start Docker Compose
+        run: |
+          docker compose down || true
+          docker compose up -d
+      - name: Verify Deployment
+        run: |
+            docker ps
 
     #   - name: Docker Push
     #     run: |
