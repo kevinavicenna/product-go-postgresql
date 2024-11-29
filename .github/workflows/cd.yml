@@ -2,7 +2,7 @@ name: Go CD Pipeline
 
 on:
   workflow_run:
-    workflows: ["CI Pipeline"]
+    workflows: ["Go CI Pipeline"]
     types:
       - completed
 
@@ -11,6 +11,14 @@ jobs:
     runs-on: self-hosted
     steps:
       - run: echo "🖥️ Test self hosted runner on my machine"
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run docker-compose
+        uses: hoverkraft-tech/compose-action@v2.0.1
+        with:
+          compose-file: "./docker-compose.yml"
+
     #   - name: Docker Push
     #     run: |
     #         docker pull ${{ secrets.DOCKER_USERNAME }}/product-go-postgresql:latest
@@ -21,13 +29,6 @@ jobs:
     #   - name: Run container
     #     run: |
     #         docker run -p 8080 ${{ secrets.DOCKER_USERNAME }}/product-go-postgresql:latest
-      - name: Checkout
-        uses: actions/checkout@v4
-        
-      - name: Run docker-compose
-        uses: hoverkraft-tech/compose-action@v2.0.1
-        with:
-          compose-file: "./docker-compose.yml"
       
 #   steps:
 #   - name: Checkout code
