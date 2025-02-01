@@ -2,14 +2,15 @@ package main
 
 import (
 	"fmt"
-	"github.com/gofiber/fiber"
+	"log"
+	"net/http"
+	"os"
+
+	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 	"github.com/kevinavicenna/product-go-postgresql/models"
 	"github.com/kevinavicenna/product-go-postgresql/storage"
 	"gorm.io/gorm"
-	"log"
-	"net/http"
-	"os"
 )
 
 type Product struct {
@@ -105,21 +106,12 @@ func (r *Repository) GetProductID(context *fiber.Ctx) error {
 	return nil
 }
 
-// sepertinya ini versi khusus fiber versi baru
-//func (r *Repository) SetupRoutes(app *fiber.App) {
-//	api := app.Group("/api")
-//	api.Post("/create_product", r.CreateProduct)
-//	api.Delete("delete_product/:id", r.DeleteProduct)
-//	api.Get("/get_product/:id", r.GetProductID)
-//	api.Get("/product", r.GetAllProduct)
-//}
-
 func (r *Repository) SetupRoutes(app *fiber.App) {
 	api := app.Group("/api")
-	api.Post("/create_product", func(c *fiber.Ctx) { r.CreateProduct(c) })
-	api.Delete("/delete_product/:id", func(c *fiber.Ctx) { r.DeleteProduct(c) })
-	api.Get("/get_product/:id", func(c *fiber.Ctx) { r.GetProductID(c) })
-	api.Get("/products", func(c *fiber.Ctx) { r.GetAllProduct(c) })
+	api.Post("/create_product", func(c *fiber.Ctx) error { return r.CreateProduct(c) })
+	api.Delete("/delete_product/:id", func(c *fiber.Ctx) error { return r.DeleteProduct(c) })
+	api.Get("/get_product/:id", func(c *fiber.Ctx) error { return r.GetProductID(c) })
+	api.Get("/products", func(c *fiber.Ctx) error { return r.GetAllProduct(c) })
 }
 
 func main() {
