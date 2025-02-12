@@ -59,4 +59,5 @@ volumes:
   caddy-data:
 
 networks:
-  go-blog-network:
+  front-network:
+  db-network:
