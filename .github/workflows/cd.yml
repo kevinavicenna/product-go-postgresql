@@ -27,13 +27,13 @@ jobs:
     #   - name:  Test Run docker-compose
     #     uses: hoverkraft-tech/compose-action@v2.0.1
     #     with:
-    #       compose-file: "./Docker-compose.yaml"
+    #       compose-file: "./compose.yaml"
 
       - name: Build and Start Docker Compose
         run: |
           ls
-          docker compose -f Docker-compose.yaml down || true
-          docker compose -f Docker-compose.yaml up -d
+          docker compose -f compose.yaml down || true
+          docker compose -f compose.yaml up -d
       - name: Verify Deployment
         run: |
             docker ps
