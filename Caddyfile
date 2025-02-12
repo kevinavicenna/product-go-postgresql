@@ -1,3 +1,3 @@
-http://localhost {
+localhost {
     reverse_proxy product-app:8080
 }

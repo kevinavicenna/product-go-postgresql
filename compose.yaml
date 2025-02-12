@@ -2,7 +2,6 @@ services:
   web:
     container_name: product-app
     build: .
-    ports: ["8080"]
     environment:
       - POSTGRES_HOST=${DB_HOST}
       - POSTGRES_USER=${DB_USER}
@@ -16,26 +15,28 @@ services:
     networks:
       - front-network
       - db-network
-  
 
   caddy:
     container_name: caddy
     image: caddy
     depends_on:
-      - web
-    ports: ["80:80"]
+      web:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
     volumes:
       - caddy-config:/config
       - caddy-data:/data
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
     networks:
       - front-network
-  
-        
+
   db:
     container_name: product-db
     image: postgres:16.3
-    ports: ["5432"]
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
