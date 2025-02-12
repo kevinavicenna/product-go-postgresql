@@ -5,7 +5,8 @@ RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 go build -o test main.go
 
-
+# COPY models
+# COPY stoa
 FROM alpine
 RUN adduser -D kevin
 USER kevin:kevin
